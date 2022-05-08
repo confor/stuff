@@ -1,0 +1,15 @@
+IgnoreRhosts yes
+
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+PrintMotd no
+PrintLastLog yes
+#TCPKeepAlive yes
+#PermitUserEnvironment no
+#Compression delayed
+ClientAliveInterval 60
+ClientAliveCountMax 2
+UseDNS no
