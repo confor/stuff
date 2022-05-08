@@ -1,0 +1,7 @@
+DisableForwarding no
+
+AllowAgentForwarding no
+AllowTcpForwarding yes
+GatewayPorts yes
+X11Forwarding yes
+X11UseLocalhost yes
