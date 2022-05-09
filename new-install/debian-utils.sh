@@ -7,7 +7,23 @@ if [[ ! -f /etc/debian_version ]]; then
 	exit 1
 fi
 
-apt-get install --quiet --yes curl wget git neovim nmap bat jq zip unzip fd-find htop
+# curl: http client
+# wget: http downloader
+# git: cvs
+# neovim: text editor
+# nmap: network exploration
+# bat: pager, cat clone
+# jq: json processor
+# zip: archiver, compression
+# unzip: decompression
+# fd-find: finder, find clone
+# htop: interactive process viewer, task manager
+# file: magic bytes reader
+# bind9-host: dns lookup
+# bind9-dnsutils: dns clients: dig, nslookup, nsupdate
+# strace: system call debugging
+apt-get install --quiet --yes curl wget git neovim nmap bat jq zip unzip \
+	fd-find htop file bind9-host bind9-dnsutils strace
 
 if [[ ! -L /usr/bin/bat ]]; then
 	ln -s /usr/bin/batcat /usr/bin/bat
