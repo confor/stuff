@@ -1,6 +1,15 @@
 #!/usr/bin/bash
 
+# lxc configuration
+# debian 11 system
+# set up unprivileged containers
+
 set -euo pipefail
+
+if [[ $EUID -eq 0 ]]; then
+	echo "Error: do NOT run as root"
+	exit 1
+fi
 
 if ! echo "$PATH" | tr ':' '\n' | grep -F '/sbin' > /dev/null; then
 	echo "Error: missing sbin from PATH"
@@ -48,4 +57,14 @@ lxc.apparmor.profile = unconfined
 
 END
 
-#apt-get install --no-install-recommends --no-install-suggests lxc libvirt0 bridge-utils uidmap
+# $ doas apt-get install --no-install-recommends --no-install-suggests lxc libvirt0 bridge-utils uidmap
+# File: /etc/network/interfaces
+#
+# iface enp1s0 inet manual
+#
+# auto br0
+# iface br0 inet static
+#     bridge_ports enp1s0
+#     bridge_fd 0
+#     address 10.0.0.8/24
+#     gateway 10.0.0.1
