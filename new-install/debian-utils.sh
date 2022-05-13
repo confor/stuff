@@ -58,3 +58,9 @@ if [[ ! -f /usr/bin/rmate ]]; then
 	wget --quiet -O /usr/bin/rmate 'https://raw.githubusercontent.com/aurora/rmate/5f8a56678eacee80388c9dbd10fe28e6f83196a4/rmate'
 	chmod +x /usr/bin/rmate
 fi
+
+if [[ ! -f /usr/bin/croc ]]; then
+	wget --quiet -O /tmp/croc_9.5.5.deb 'https://github.com/schollz/croc/releases/download/v9.5.5/croc_9.5.5_Linux-64bit.deb'
+	dpkg --install /tmp/croc_9.5.5.deb
+	rm /tmp/croc_9.5.5.deb
+fi
