@@ -7,4 +7,4 @@ if [[ ! -f "$1" ]]; then
 	exit 1
 fi
 
-grep -v '^#' "$1" | xargs -n1 sysctl -w
+sysctl --load="$1"
