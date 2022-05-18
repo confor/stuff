@@ -1,0 +1,13 @@
+# system utilities
+bat fd jq htmlq sudo wget shellcheck
+croc yt-dlp
+adb scrcpy
+
+# media: video
+ffmpeg mediainfo mpv sox
+
+# media: images
+gifsicle optipng pngcrush
+
+# media: documents
+qpdf xpdf-tools
