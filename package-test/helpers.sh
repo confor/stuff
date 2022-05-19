@@ -16,15 +16,15 @@ declare -A CMD_PURGE
 
 CMD_INSTALL[apt]='apt-get install'
 CMD_UNINSTALL[apt]='apt-get remove'
-CMD_SEARCH[apt]='apt-cache search'
-CMD_UPDATE[apt]='apt-get update'
-CMD_UPGRADE[apt]='apt upgrade'
+CMD_SEARCH[apt]='apt-cache search --names-only'
+CMD_UPDATE[apt]='apt update'
+CMD_UPGRADE[apt]='apt upgrade'  # should this be apt-get upgrade && apt-get dist-upgrade?
 CMD_PURGE[apt]='apt-get remove --purge'
 
 CMD_INSTALL[pip3]='python3 -m pip install'
 CMD_UNINSTALL[pip3]='python3 -m pip uninstall'
-CMD_SEARCH[pip3]='python3 -m pip search' # wasn't this removed??
-CMD_UPDATE[pip3]='printf "pip doesnt need list updates\n" #'
+CMD_SEARCH[pip3]='python3 -m pip search'  # wasn't this removed??
+CMD_UPDATE[pip3]='echo pip doesnt need list updates'
 CMD_UPGRADE[pip3]='python3 -m pip install --upgrade'
 CMD_PURGE[pip3]='printf "pip doesnt support purging packages\n" #'
 
@@ -55,4 +55,12 @@ function _echo_error() {
 
 function _echo_warn() {
 	echo -e "${COLORS[YELLOW]}Warn:${COLORS[DEFAULT]}" "$@"
+}
+
+function _assert_config_exists() {  # TODO find a better name
+	if [[ $CURRENT_SYSTEM == 'unset' ]]; then
+		_echo_error "This command needs a package manager"
+		_echo_error "Pick one with the 'system' subcommand"
+		exit 1
+	fi
 }
