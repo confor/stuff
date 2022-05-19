@@ -1,0 +1,135 @@
+#!/usr/bin/bash
+# shellcheck disable=SC1091 disable=SC2068
+
+set -euo pipefail
+
+# require at least bash 5
+if [[ "${BASH_VERSINFO:-0}" -lt 5 ]]; then
+	echo "Bash 5 or higher is required" # i think 4 could work?
+	exit 1
+fi
+
+#################
+# helper script #
+#################
+# find location of this script
+THIS_SCRIPT="${BASH_SOURCE[0]}"
+
+# if ($THIS_SCRIPT is a symlink)
+if [[ -L "$THIS_SCRIPT" ]]; then
+	THIS_SCRIPT=$(readlink --canonicalize "$THIS_SCRIPT")
+fi
+
+
+# find folder where this script is stored
+THIS_DIR=$(dirname "$THIS_SCRIPT")
+INSTALL_DIR="$THIS_DIR" # TODO remove this one
+CONFIG_FILE="$INSTALL_DIR/current" # TODO use a proper xdg config dir
+
+# load helper file
+source "$THIS_DIR/helpers.sh"
+
+
+# at least one argument is needed
+if [[ $# -lt 1 ]]; then
+	_usage
+	exit 1
+fi
+
+#######################
+# parse chosen system #
+#######################
+CURRENT_SYSTEM="unset"
+
+if [[ ! -f "$CONFIG_FILE" ]]; then
+	_echo_warn "config file not found at '$CONFIG_FILE'"
+	_echo_warn "select a package manager with the 'system' subcommand"
+else
+	# supported systems go here
+	# sadly they're hardcoded
+	case "$(cat "$CONFIG_FILE")" in
+		"apt")     CURRENT_SYSTEM=apt ;;
+		"pip3")    CURRENT_SYSTEM=pip3 ;;
+		*)
+			_echo_error "unrecognized package manager in configuration"
+			_echo_error "please edit or delete your '$CONFIG_FILE' file"
+			exit 1
+			;;
+	esac
+fi
+
+
+SUBCOMMAND="$1"
+case "$SUBCOMMAND" in
+	"add" | "i" | "install")
+		if [[ $CURRENT_SYSTEM == 'unset' ]]; then
+			_echo_error "This command needs a package manager"
+			_echo_error "Pick one with the 'system' subcommand"
+			exit 1
+		fi
+
+		shift
+		${CMD_INSTALL[$CURRENT_SYSTEM]} $@
+		exit $?
+		;;
+
+	"del" | "u" | "uninstall")
+		if [[ $CURRENT_SYSTEM == 'unset' ]]; then
+			_echo_error "This command needs a package manager"
+			_echo_error "Pick one with the 'system' subcommand"
+			exit 1
+		fi
+
+		shift
+		${CMD_UNINSTALL[$CURRENT_SYSTEM]} $@
+		exit $?
+		;;
+
+	"system")
+		if [[ $# -eq 1 ]]; then
+			echo "The currently managed package manager is $CURRENT_SYSTEM"
+		echo "all supported package managers: ${SUPPORTED_PMS[*]}"
+			exit 0
+		fi
+
+		# what?
+		if [[ $# -ne 2 ]]; then
+			_echo_error "Syntax: asd system <package manager>"
+			_echo_error "supported package managers: ${SUPPORTED_PMS[*]}"
+			exit 1
+		fi
+
+		# TODO figure out how to fix this ugly mess
+		chosen=$2
+		found=nope
+		for i in "${SUPPORTED_PMS[@]}"; do
+			if [[ "$chosen" == "$i" ]]; then
+				found=yeah
+				break
+			fi
+		done
+
+		if [[ "$found" == "nope" ]]; then
+			_echo_error "unrecognized package manager '$2'"
+			_echo_error "supported package managers: ${SUPPORTED_PMS[*]}"
+			exit 1
+		fi
+
+		printf "%s" "$2" > "$CONFIG_FILE"
+		echo "now managing the package manager $2"
+		exit 0
+		;;
+
+	"help")
+		_usage
+		exit 0
+		;;
+
+	*)
+		_echo_error "unrecognized subcommand '$1'"
+		exit 1
+		;;
+esac
+
+# how'd we get here?
+exit 1
